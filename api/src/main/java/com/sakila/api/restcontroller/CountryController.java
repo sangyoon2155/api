@@ -10,14 +10,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.api.dto.CountryDto;
 import com.sakila.api.entity.CountryEntity;
 import com.sakila.api.service.CountryService;
-
-import lombok.Delegate;
 
 @RestController
 public class CountryController {
@@ -28,15 +25,20 @@ public class CountryController {
 		this.countryService = countryService;
 	}
 	
+	// 한행 조회
+	@GetMapping("/countryOne/{countryId}")
+	public ResponseEntity<CountryEntity> countryOne(@PathVariable int countryId) {
+		return new ResponseEntity<CountryEntity> (countryService.findById(countryId), HttpStatus.OK);
+	}
+	
 	// 삭제
 	@DeleteMapping("/country/{countryId}")
 	public ResponseEntity<String> deleteCountry(@PathVariable int countryId) {
 		
-		boolean result = countryService.delete(countryId); 
+		boolean result = countryService.delete(countryId);
 		if(result) {
 			return new ResponseEntity<String>("삭제성공", HttpStatus.OK);
 		}
-		
 		return new ResponseEntity<String>("삭제실패", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
@@ -47,16 +49,16 @@ public class CountryController {
 		return new ResponseEntity<String>("수정성공", HttpStatus.OK);
 	}
 	
-	
+	// 입력
 	@PostMapping("/country")
 	public ResponseEntity<String> country(@RequestBody CountryDto countryDto) {
-		// @RequestBody json형태의 문자열 매개값을 CountryDto타입으로 변환시킨다.
+		// @RequstBody json형태의 문자열 매개값을 CountryDto타입으로 변환시킨다.
 		System.out.println(countryDto.toString());
 		countryService.save(countryDto);
-		
 		return new ResponseEntity<String>("입력성공", HttpStatus.CREATED);
 	}
 	
+	// 전체 조회
 	@GetMapping("/country")
 	public ResponseEntity<List<CountryEntity>> country() {
 		return new ResponseEntity<List<CountryEntity>>(countryService.findAll(), HttpStatus.OK);
